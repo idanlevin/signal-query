@@ -98,7 +98,7 @@ optional arguments:
 - To provide a db file and key path and save the query results into a file (from MacOS/Linux):
 
    ```
-      docker run -ti --rm -v "${HOME}/Library/Application Support/Signal":"/root/.config/Signal" -v ${PWD}:/output signal_query:latest --db_path=data/your_database.db --key_file_path=/output/output.txt
+      docker run -ti --rm -v "${HOME}/Library/Application Support/Signal":"/root/.config/Signal" -v ${PWD}:/output signal_query:latest --db_path=data/your_database.db --key_file_path=path/to/your/keyfile.txt --output_file=/output/outputfile.txt
    ```
 
 ## Signal Database Schema
@@ -188,7 +188,14 @@ The `conversations` table in the Signal database stores information about indivi
 - Get the only the message content of the messages sent or received in the last 24 hours
     ```sql
     select body from messages
-        where messages.type='incoming' or messages.type='outgoing' 
-        and datetime(sent_at, 'unixepoch', 'localtime') >= datetime('now', '-1 day', 'localtime')
+        where (messages.type='incoming' or messages.type='outgoing') 
+        and datetime(sent_at / 1000, 'unixepoch', 'localtime') >= datetime('now', '-1 day', 'localtime')
         order by sent_at;
+    ```
+- Get the messages from a specific group chat
+    ```sql
+    select body from messages
+        inner join conversations on messages.conversationId = conversations.id 
+        where (messages.type='incoming' or messages.type='outgoing') 
+        and conversations.name='<GROUP NAME>'
     ```
