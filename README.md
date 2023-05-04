@@ -59,7 +59,7 @@ optional arguments:
                         Path to the output file (optional)
 ```
 
-> **NOTE**: Signal's default storage path is `${HOME}/Library/Application Support/Signal` on MacOS and Linux and `%USERPROFILE%\AppData\Roaming\Signal` on Windows.
+> **NOTE:** Signal's default storage path is `${HOME}/Library/Application Support/Signal` on MacOS and Linux and `%USERPROFILE%\AppData\Roaming\Signal` on Windows.
 
 ### Local Usage
 
@@ -82,7 +82,7 @@ optional arguments:
    ```
 
 ### Docker Usage
-> **Note**: By default the script will look in `/root/.config/` for the Signal database and key file, so by mounting the volume to this location you won't need to supply db and key paths. 
+> **NOTE:** By default the script will look in `/root/.config/` for the Signal database and key file, so by mounting the volume to this location you won't need to supply db and key paths. 
 
 - To run a single query and get the result to stdout (from MacOS/Linux):
     ```
@@ -175,7 +175,7 @@ The `conversations` table in the Signal database stores information about indivi
 
 
 ## Query Examples
->**Note**:The right way to correlate between the messages and the conversations (contacts) is to us the `uuid` field from `conversations` and `sourceUuid` from `messages` table.
+>**NOTE:** The right way to correlate between the messages and the conversations (contacts) is to us the `uuid` field from `conversations` and `sourceUuid` from `messages` table.
 
 - Get the timestamp, sender's full name and content of the first 100 messages (incoming or outgoing)
     ```sql
@@ -188,7 +188,7 @@ The `conversations` table in the Signal database stores information about indivi
 - Get the only the message content of the messages sent or received in the last 24 hours
     ```sql
     select body from messages
-    where messages.type='incoming' or messages.type='outgoing' 
-    and datetime(sent_at, 'unixepoch', 'localtime') >= datetime('now', '-1 day', 'localtime')
-    order by sent_at;
+        where messages.type='incoming' or messages.type='outgoing' 
+        and datetime(sent_at, 'unixepoch', 'localtime') >= datetime('now', '-1 day', 'localtime')
+        order by sent_at;
     ```
