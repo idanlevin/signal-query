@@ -1,4 +1,5 @@
 import os
+import csv
 import json
 import logging
 import platform
@@ -42,16 +43,25 @@ def read_key(key_file_path):
     return key
 
 # Execute a SQL query and save the results to a file or print to console
-def execute_query(cursor, query, output_file=None):
+def execute_query(cursor, query, output_file=None, output_format='csv'):
     # Execute the query
     cursor.execute(query)
     
     # Save the results to a file or print to console
     results = cursor.fetchall()
     if output_file:
-        with open(output_file, 'a') as f:
-            for row in results:
-                f.write(str(row) + '\n')
+        with open(output_file, 'a', newline='') as f:
+            if output_format == 'csv':
+                headers = [description[0] for description in cursor.description]
+                writer = csv.writer(f)
+                writer.writerow(headers)  # write the headers
+                for row in results:
+                    escaped_row = [str(item).replace('\n', '\\n') for item in row]
+                    writer.writerow(escaped_row)
+            else: # json
+                for row in results:
+                    r = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) ]
+                    f.write(json.dumps(r) + '\n')
     else:
         for row in results:
             print(row)
@@ -94,13 +104,14 @@ if __name__ == "__main__":
     parser.add_argument('--db_path', default=default_db_path(), help='Path to the encrypted SQLite database (default: %(default)s)')
     parser.add_argument('--key_file_path', default=default_key_path(), help='Path to the key file (default: %(default)s)')
     parser.add_argument('--output_file', help='Path to the output file (optional)')
+    parser.add_argument('--output_format', default='csv', help='Output format file, can be json or csv (default: %(default)s)')
 
     args = parser.parse_args()
     
     conn, cursor = setup_connection(args.db_path, args.key_file_path)
     
     if args.query:
-        execute_query(cursor, args.query, args.output_file)
+        execute_query(cursor, args.query, args.output_file, args.output_format)
     else:
         interactive_shell(cursor, args.output_file)
     
