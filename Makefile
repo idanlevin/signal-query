@@ -7,7 +7,7 @@ run_docker = \
         -v ${PWD}/output:/output signal_query:latest \
         --output_file=/output/$(output_file) \
 		--output_format="json" \
-        --query="SELECT ifnull(SUBSTR(sourceUuid, -4, 4),'bdb5') as sender, body as msg FROM messages WHERE conversationId='fca18a2f-3f13-45c7-8cee-d87636992d89' AND (messages.type='incoming' OR messages.type='outgoing') AND datetime(sent_at / 1000, 'unixepoch', 'localtime') >= datetime('now', '$(query_time_range)', 'localtime') ORDER BY sent_at;"
+		--query="SELECT sent_at, ifnull(SUBSTR(sourceUuid, -4, 4),'bdb5') as sender, json_extract(json,'$.quote.id') as reply_to, body as msg FROM messages WHERE conversationId='62b9f987-b634-4f06-84af-e4ab34142841' AND (messages.type='incoming' OR messages.type='outgoing') AND datetime(sent_at / 1000, 'unixepoch', 'localtime') >= datetime('now', '$(query_time_range)', 'localtime') ORDER BY sent_at;"
 
 get_messages:
 	$(run_docker)
