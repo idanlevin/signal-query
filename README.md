@@ -134,7 +134,7 @@ The `messages` table in the Signal database stores the messages exchanged betwee
 | serverGuid                 | GUID of the message on the server                         |
 | source                     | Address (phone number) of the sender/recipient            |
 | sourceDevice               | Device ID of the sender                                   |
-| sourceUuid                 | UUID of the sender/recipient                              |
+| sourceServiceId            | Service ID of the sender/recipient                        |
 | storyDistributionListId    | Identifier of the story distribution list                 |
 | storyId                    | Identifier of the story                                   |
 | type                       | Type of the message (incoming, outgoing, etc.)            |
@@ -171,16 +171,16 @@ The `conversations` table in the Signal database stores information about indivi
 | profileLastFetchedAt | Timestamp when the contact's profile was last fetched     |
 | profileName          | First name of the contact (from Signal profile)           |
 | type                 | Type of the contact (private or group)                    |
-| uuid                 | UUID of the contact                                       |
+| serviceId            | Service ID of the contact                                 |
 
 
 ## Query Examples
->**NOTE:** The right way to correlate between the messages and the conversations (contacts) is to us the `uuid` field from `conversations` and `sourceUuid` from `messages` table.
+>**NOTE:** The right way to correlate between the messages and the conversations (contacts) is to us the `serviceId` field from `conversations` and `sourceServiceId` from `messages` table.
 
 - Get the timestamp, sender's full name and content of the first 100 messages (incoming or outgoing)
     ```sql
     select sent_at, profileFullname, body from messages 
-        inner join conversations on messages.sourceUuid = conversations.uuid 
+        inner join conversations on messages.sourceServiceId = conversations.serviceId 
         where messages.type='incoming' or messages.type='outgoing'
         order by sent_at 
         limit 100;
