@@ -162,5 +162,7 @@ cython_debug/
 # Outputfolder
 output/
 db_copy/
-local_export.sh
 playground.txt
+conversation_ids.txt
+export_signal_messages.sh
+export_pef_contacts.sh

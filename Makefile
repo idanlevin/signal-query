@@ -28,8 +28,12 @@ getall: output_file = all.txt
 getall: query_time_range = -10000 day
 getall: get_messages
 
+.PHONY: copydb
+copydb:
+	./copy_signal_db.sh
+
 it:
-	docker run -ti --rm -v "${HOME}/Library/Application Support/Signal":"/root/.config/Signal" signal_query:latest
+	docker run -ti --rm -v ${PWD}/db_copy:/input -v ${PWD}/output:/output signal_query:latest --db_path=/input/db-latest.sqlite --key_file_path=/input/config.json
 
 clean:
 	rm -f output/*.txt
